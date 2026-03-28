@@ -33,9 +33,10 @@ Rules:
 - For skipped questions, apply defaults subtly — don't over-specify
 - The prompt should feel like a human expert wrote it, not a template
 
-Return JSON with two fields:
+Return JSON with three fields:
 - "finalPrompt": string (the complete optimized prompt)
 - "changelog": string[] (3-5 improvement descriptions)
+- "tips": string[] (3-5 specific, actionable suggestions for further improving this prompt — things the user could add or adjust to get even better results)
 
 Return ONLY valid JSON. No markdown, no explanation.`;
 }
