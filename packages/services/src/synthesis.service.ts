@@ -75,6 +75,7 @@ export class SynthesisService {
       const result = safeJsonParse<{
         finalPrompt: string;
         changelog: string[];
+        tips?: string[];
       }>(response.content);
       if (!result) {
         throw new ServiceError("MODEL_INVALID_RESPONSE", 500);
@@ -84,6 +85,7 @@ export class SynthesisService {
       const synthesisResponse: SynthesisResponse = {
         finalPrompt: result.finalPrompt,
         changelog: result.changelog,
+        tips: result.tips,
         metadata: {
           category: session.category!,
           tokensUsed: response.tokensUsed.total,
@@ -92,9 +94,20 @@ export class SynthesisService {
       };
 
       // 8. Persist and complete
+      const initialVersion = {
+        id: crypto.randomUUID(),
+        prompt: result.finalPrompt,
+        changelog: result.changelog,
+        tips: result.tips,
+        trigger: "synthesis" as const,
+        description: "Initial generation",
+        createdAt: new Date().toISOString(),
+      };
+
       await this.sessions.transitionTo(sessionId, "COMPLETED", {
         finalPrompt: result.finalPrompt,
         changelog: result.changelog,
+        versions: [initialVersion],
         tokensUsed: response.tokensUsed.total,
         modelUsed: response.model,
       });
@@ -161,12 +174,14 @@ export class SynthesisService {
     const result = safeJsonParse<{
       finalPrompt: string;
       changelog: string[];
+      tips?: string[];
     }>(response.content);
     if (!result) throw new ServiceError("MODEL_INVALID_RESPONSE", 500);
 
     const synthesisResponse: SynthesisResponse = {
       finalPrompt: result.finalPrompt,
       changelog: result.changelog,
+      tips: result.tips,
       metadata: {
         category: session.category!,
         tokensUsed: response.tokensUsed.total,
