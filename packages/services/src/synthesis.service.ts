@@ -21,6 +21,7 @@ export class SynthesisService {
   ): Promise<SynthesisResponse> {
     // 1. Load session and validate state
     const session = await this.sessions.getById(sessionId, userId);
+    const targetModel = (session as any).targetModel as string | undefined;
     const questions = session.questions as ClarificationQuestion[];
     if (!questions || !session.rawPrompt) {
       throw new ServiceError("SESSION_NOT_ANALYZED", 409);
@@ -63,7 +64,7 @@ export class SynthesisService {
       // 5. Call model
       const provider = getModelProvider();
       const response = await provider.generate({
-        systemPrompt: buildSynthesisPrompt(),
+        systemPrompt: buildSynthesisPrompt(targetModel),
         userMessage,
         temperature: 0.6,
         maxTokens: 3000,
@@ -127,6 +128,7 @@ export class SynthesisService {
     }
 
     const session = await this.sessions.getById(sessionId, userId);
+    const targetModel = (session as any).targetModel as string | undefined;
     if (session.status !== "COMPLETED") {
       throw new ServiceError("SESSION_NOT_COMPLETED", 409);
     }
@@ -149,7 +151,7 @@ export class SynthesisService {
 
     const provider = getModelProvider();
     const response = await provider.generate({
-      systemPrompt: buildSynthesisPrompt(),
+      systemPrompt: buildSynthesisPrompt(targetModel),
       userMessage: `Original rough prompt:\n"${rawPrompt}"\n\nClarification Q&A:\n${qaContext}\n\nGenerate the optimized prompt. Use different phrasing than previous attempts.`,
       temperature: 0.8,
       maxTokens: 3000,

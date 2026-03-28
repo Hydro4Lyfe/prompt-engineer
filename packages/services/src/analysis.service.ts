@@ -1,6 +1,11 @@
 import { getModelProvider, safeJsonParse } from "@prompt-engineer/ai";
 import { buildAnalysisPrompt } from "@prompt-engineer/prompts";
-import type { AnalysisResponse, PromptMode } from "@prompt-engineer/validators";
+import type {
+  AnalysisResponse,
+  PromptMode,
+  SteeringInputs,
+  TargetModel,
+} from "@prompt-engineer/validators";
 import { SessionService } from "./session.service";
 import { UsageService } from "./usage.service";
 import { ServiceError } from "./errors";
@@ -15,25 +20,30 @@ export class AnalysisService {
     sessionId: string,
     rawPrompt: string,
     mode?: PromptMode,
-    userId?: string
+    userId?: string,
+    targetModel?: TargetModel,
+    steeringInputs?: SteeringInputs
   ): Promise<AnalysisResponse> {
-    // 1. Check rate limits and tier
+    // 1. Check rate limits and tier (skip for anonymous users)
     if (userId) {
       await this.usage.checkLimits(userId);
       if (mode === "detailed") {
         await this.usage.requireFeature(userId, "detailedMode");
       }
-    } else {
-      mode = "quick";
     }
+    // Anonymous users can use any mode during testing
 
     // 2. Transition session to ANALYZING
-    await this.sessions.transitionTo(sessionId, "ANALYZING", { rawPrompt });
+    await this.sessions.transitionTo(sessionId, "ANALYZING", {
+      rawPrompt,
+      ...(targetModel && { targetModel }),
+      ...(steeringInputs && { steeringInputs }),
+    });
 
     try {
-      // 3. Call model
+      // 3. Call model with steering context
       const provider = getModelProvider();
-      const systemPrompt = buildAnalysisPrompt();
+      const systemPrompt = buildAnalysisPrompt({ steeringInputs, targetModel });
       const response = await provider.generate({
         systemPrompt,
         userMessage: rawPrompt,
@@ -64,7 +74,7 @@ export class AnalysisService {
         mode: effectiveMode === "quick" ? "QUICK" : "DETAILED",
       });
 
-      // 7. Track usage (session count + tokens)
+      // 7. Track usage
       if (userId) {
         await this.usage.recordSession(userId, response.tokensUsed.total);
       }

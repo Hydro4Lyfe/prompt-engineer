@@ -7,30 +7,34 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
   QUESTIONS_READY: ["ANSWERS_SUBMITTED"],
   ANSWERS_SUBMITTED: ["GENERATING"],
   GENERATING: ["COMPLETED", "FAILED"],
-  COMPLETED: ["GENERATING"], // allows regen
-  FAILED: ["ANALYZING"], // allows retry
+  COMPLETED: ["GENERATING"],
+  FAILED: ["ANALYZING"],
 };
 
 export class SessionService {
-  async create(userId?: string): Promise<{ id: string }> {
+  async create(userId?: string, anonymousId?: string): Promise<{ id: string }> {
     const session = await prisma.promptSession.create({
       data: {
         rawPrompt: "",
         mode: "QUICK",
         status: "CREATED",
         ...(userId && { userId }),
+        ...(anonymousId && !userId && { anonymousId }),
       },
       select: { id: true },
     });
     return session;
   }
 
-  async getById(id: string, userId?: string) {
+  async getById(id: string, userId?: string, anonymousId?: string) {
     const session = await prisma.promptSession.findUnique({
       where: { id },
     });
     if (!session) throw new ServiceError("SESSION_NOT_FOUND", 404);
     if (userId && session.userId && session.userId !== userId) {
+      throw new ServiceError("FORBIDDEN", 403);
+    }
+    if (anonymousId && session.anonymousId && session.anonymousId !== anonymousId) {
       throw new ServiceError("FORBIDDEN", 403);
     }
     return session;
@@ -48,6 +52,29 @@ export class SessionService {
         status: true,
         category: true,
         createdAt: true,
+      },
+    });
+
+    const hasMore = sessions.length > limit;
+    const items = hasMore ? sessions.slice(0, -1) : sessions;
+    const nextCursor = hasMore ? items[items.length - 1].id : null;
+
+    return { sessions: items, nextCursor };
+  }
+
+  async listByAnonymousId(anonymousId: string, cursor?: string, limit = 20) {
+    const sessions = await prisma.promptSession.findMany({
+      where: { anonymousId },
+      orderBy: { createdAt: "desc" },
+      take: limit + 1,
+      ...(cursor && { cursor: { id: cursor }, skip: 1 }),
+      select: {
+        id: true,
+        rawPrompt: true,
+        status: true,
+        category: true,
+        createdAt: true,
+        finalPrompt: true,
       },
     });
 
