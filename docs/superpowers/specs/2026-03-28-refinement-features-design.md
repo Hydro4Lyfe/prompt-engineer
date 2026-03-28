@@ -105,7 +105,7 @@ When a user clicks a tip chip:
 2. A new version entry is created: `{ trigger: "tip", description: "Applied: [tip text]", prompt: [updated prompt] }`
 3. The tip chip shows a checkmark and dims out
 4. The prompt display updates immediately — no API call
-5. Applied tips can be "unapplied" by clicking again (removes the appended text, creates another version)
+5. Tips are one-way — once applied, the user can undo by navigating to a previous version in the version history
 
 ---
 
@@ -161,9 +161,10 @@ Screen 3 (result displayed)
     |   → Create new version entry
     |
     ├── User adjusts steering dials + clicks "Refresh Prompt"
-    |   → POST /api/sessions/[id]/answers (reuse synthesis endpoint)
-    |   → Body: { answers, steeringInputs (updated) }
-    |   → Full regeneration with new params
+    |   → POST /api/sessions/[id]/regenerate (new endpoint)
+    |   → Body: { steeringInputs (updated) }
+    |   → Reads original rawPrompt, answers, targetModel from session
+    |   → Full regeneration with new steering params
     |   → Create new version entry
     |
     └── User clicks version in history
@@ -233,7 +234,30 @@ export type PromptVersion = z.infer<typeof PromptVersion>;
 
 ---
 
-## New API Endpoint
+## Service Layer Changes
+
+### SynthesisService
+
+- Update `safeJsonParse` type in `synthesize()` to expect `{ finalPrompt, changelog, tips }` instead of `{ finalPrompt, changelog }`
+- Thread `tips` through to the `SynthesisResponse` object
+- Persist `tips` on the session alongside `finalPrompt` and `changelog`
+- When building the initial version entry, include `tips` from the synthesis response
+
+### New: RefinementService
+
+A new service in `packages/services/src/refinement.service.ts` that handles:
+- Free-text refinement (calls Claude with refinement prompt)
+- Steering dial regeneration (calls Claude with synthesis prompt + new steering values, reading original rawPrompt/answers/targetModel from session)
+- Version persistence (appends to the `versions` JSON array on the session)
+
+### SessionService / loadSession Hook
+
+- `loadSession` in `use-session-flow.ts` must restore `steeringInputs` and `targetModel` from the session data so the dials on Screen 3 show the user's original values (not defaults)
+- The `SessionResponse` validator must be extended to include `versions`, `steeringInputs`, and `targetModel` fields
+
+---
+
+## New API Endpoints
 
 ### `POST /api/sessions/[id]/refine`
 
@@ -241,12 +265,36 @@ export type PromptVersion = z.infer<typeof PromptVersion>;
 
 **Behavior:**
 1. Load the session, verify it's COMPLETED
-2. Call Claude with a refinement prompt template: "Given this prompt, apply this refinement instruction and return the updated prompt with a short description of what you changed."
+2. Call Claude with a refinement prompt template
 3. Return `RefineResponse` — `{ finalPrompt, description }`
 4. Update the session's `versions` array with the new version
 5. Update `finalPrompt` on the session to the latest version
 
 **Does NOT change session status** — stays COMPLETED throughout refinements.
+
+**No tier gating** — refinements are available to all users during testing (same as analysis/synthesis).
+
+### `POST /api/sessions/[id]/regenerate`
+
+**Request:** `RegenerateInput` — `{ steeringInputs }`
+
+**Behavior:**
+1. Load the session, verify it's COMPLETED
+2. Read original `rawPrompt`, `answers`, `targetModel` from session
+3. Update session's `steeringInputs` with the new values
+4. Call synthesis with the updated steering context
+5. Return `SynthesisResponse` (with new tips)
+6. Append new version to `versions` array
+7. Update `finalPrompt` on the session
+
+New schema:
+
+```typescript
+export const RegenerateInput = z.object({
+  steeringInputs: SteeringInputs,
+});
+export type RegenerateInput = z.infer<typeof RegenerateInput>;
+```
 
 ---
 
