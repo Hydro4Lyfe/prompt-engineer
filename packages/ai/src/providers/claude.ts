@@ -6,7 +6,7 @@ export class ClaudeProvider implements ModelProvider {
   private client: Anthropic;
   private model: string;
 
-  constructor(apiKey: string, model = "claude-sonnet-4-5-20241022") {
+  constructor(apiKey: string, model = "claude-sonnet-4-6") {
     this.client = new Anthropic({ apiKey });
     this.model = model;
   }
