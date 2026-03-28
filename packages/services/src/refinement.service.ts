@@ -80,9 +80,9 @@ export class RefinementService {
     const answers =
       (session.answers as Record<string, string | null>) ?? {};
 
-    await this.sessions.transitionTo(sessionId, "GENERATING");
-
     try {
+      await this.sessions.transitionTo(sessionId, "GENERATING");
+
       const qaContext = questions
         .map((q) => {
           const answer = answers[q.id];
