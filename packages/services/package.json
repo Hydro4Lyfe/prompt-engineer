@@ -1,0 +1,21 @@
+{
+  "name": "@prompt-engineer/services",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@prompt-engineer/ai": "workspace:*",
+    "@prompt-engineer/db": "workspace:*",
+    "@prompt-engineer/prompts": "workspace:*",
+    "@prompt-engineer/validators": "workspace:*",
+    "stripe": "^18.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0"
+  }
+}

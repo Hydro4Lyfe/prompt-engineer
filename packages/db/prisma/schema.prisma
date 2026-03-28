@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String          @id @default(cuid())
+  email                String          @unique
+  name                 String?
+  image                String?
+  emailVerified        DateTime?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  // Billing
+  tier                 UserTier        @default(FREE)
+  stripeCustomerId     String?         @unique
+  stripeSubscriptionId String?         @unique
+  stripePeriodEnd      DateTime?
+
+  // Relations
+  sessions             PromptSession[]
+  usage                Usage?
+  accounts             Account[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model PromptSession {
+  id               String          @id @default(cuid())
+  userId           String?
+  user             User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Input
+  rawPrompt        String          @default("")
+  mode             PromptMode      @default(QUICK)
+
+  // Analysis results
+  category         PromptCategory?
+  intent           String?
+  detectedElements Json?
+  missingElements  Json?
+
+  // Clarification
+  questions        Json?
+  answers          Json?
+
+  // Output
+  finalPrompt      String?         @db.Text
+  changelog        Json?
+
+  // Meta
+  status           SessionStatus   @default(CREATED)
+  modelUsed        String?
+  tokensUsed       Int?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status])
+}
+
+model Usage {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokensUsedToday Int      @default(0)
+  tokensUsedMonth Int      @default(0)
+  sessionsToday   Int      @default(0)
+  sessionsMonth   Int      @default(0)
+  lastResetDate   DateTime @default(now())
+}
+
+enum UserTier {
+  FREE
+  PRO
+  TEAM
+}
+
+enum PromptMode {
+  QUICK
+  DETAILED
+}
+
+enum PromptCategory {
+  WRITING
+  CODING
+  RESEARCH
+  BUSINESS
+  CREATIVE
+  EDUCATIONAL
+}
+
+enum SessionStatus {
+  CREATED
+  ANALYZING
+  QUESTIONS_READY
+  ANSWERS_SUBMITTED
+  GENERATING
+  COMPLETED
+  FAILED
+}
