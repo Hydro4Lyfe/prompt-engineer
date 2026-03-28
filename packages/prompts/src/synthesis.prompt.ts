@@ -1,5 +1,19 @@
-export function buildSynthesisPrompt(): string {
+const MODEL_GUIDANCE: Record<string, string> = {
+  claude: `Format the prompt for Claude (Anthropic). Use XML tags like <context>, <instructions>, <constraints> for structure. Leverage system prompt conventions. Claude responds well to clear role definitions and explicit output format specifications.`,
+  "gpt-4": `Format the prompt for GPT-4 (OpenAI). Use markdown formatting with headers and bullet points. Place the most important instructions first. Use explicit instruction hierarchy. GPT-4 responds well to numbered steps and "You MUST" directives.`,
+  gemini: `Format the prompt for Gemini (Google). Use clear section headers and explicit output format specifications. Gemini works well with structured instructions and concrete examples.`,
+  llama: `Format the prompt for Llama (Meta). Keep instructions direct and explicit. Use simple, clear formatting. Avoid relying on nuanced formatting — be straightforward. Shorter, focused prompts tend to work better.`,
+  mistral: `Format the prompt for Mistral. Keep instructions direct and explicit. Use clear structure with simple formatting. Be specific about constraints and output format.`,
+  other: `Format the prompt using generic best practices. Use clear structure with headers or separators. Include explicit constraints, output format, and examples where helpful.`,
+};
+
+export function buildSynthesisPrompt(targetModel?: string): string {
+  const modelKey = targetModel ?? "other";
+  const modelGuidance = MODEL_GUIDANCE[modelKey] ?? MODEL_GUIDANCE["other"];
+
   return `You are an expert prompt engineer. Given a user's original rough prompt and their answers to clarification questions, generate an optimized final prompt.
+
+${modelGuidance}
 
 Structure the final prompt to include (as applicable):
 1. Role/persona framing

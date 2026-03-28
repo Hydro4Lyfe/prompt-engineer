@@ -1,4 +1,48 @@
-export function buildAnalysisPrompt(): string {
+import type { SteeringInputs } from "@prompt-engineer/validators";
+
+interface AnalysisPromptOptions {
+  steeringInputs?: SteeringInputs;
+  targetModel?: string;
+}
+
+function describeSteeringContext(inputs: SteeringInputs): string {
+  const parts: string[] = [];
+
+  if (inputs.taskType) {
+    parts.push(`The user has categorized this as a ${inputs.taskType} task.`);
+  }
+
+  if (inputs.tone !== undefined && inputs.tone !== 50) {
+    const toneDesc = inputs.tone < 30 ? "formal" : inputs.tone < 70 ? "balanced" : "casual";
+    parts.push(`Preferred tone: ${toneDesc} (${inputs.tone}/100 on formal-to-casual scale).`);
+  }
+
+  if (inputs.detailLevel !== undefined && inputs.detailLevel !== 50) {
+    const detailDesc = inputs.detailLevel < 30 ? "concise" : inputs.detailLevel < 70 ? "moderate" : "thorough";
+    parts.push(`Preferred detail level: ${detailDesc} (${inputs.detailLevel}/100 on concise-to-thorough scale).`);
+  }
+
+  if (inputs.categoryDials) {
+    const dialParts = Object.entries(inputs.categoryDials).map(
+      ([key, value]) => `${key}: ${value}`
+    );
+    if (dialParts.length > 0) {
+      parts.push(`Category-specific preferences: ${dialParts.join(", ")}.`);
+    }
+  }
+
+  return parts.join(" ");
+}
+
+export function buildAnalysisPrompt(options?: AnalysisPromptOptions): string {
+  let steeringSection = "";
+  if (options?.steeringInputs) {
+    const context = describeSteeringContext(options.steeringInputs);
+    if (context) {
+      steeringSection = `\n\nThe user has already provided these preferences:\n${context}\nDo NOT ask questions about topics the user has already specified above. Focus your questions on what is still missing.`;
+    }
+  }
+
   return `You are an expert prompt engineer analyzing a user's rough prompt to identify what information would most improve the final prompt's effectiveness.
 
 Analyze the provided rough prompt and return a JSON object with these fields:
@@ -24,7 +68,7 @@ Rules:
 - Prefer "select" over "text" when possible — faster for the user
 - Priority 1 = without this answer, the output will likely be wrong or useless
 - Priority 2 = without this answer, the output will be generic
-- Priority 3+ = refinement, nice to have
+- Priority 3+ = refinement, nice to have${steeringSection}
 
 Return ONLY valid JSON. No markdown, no explanation.`;
 }
