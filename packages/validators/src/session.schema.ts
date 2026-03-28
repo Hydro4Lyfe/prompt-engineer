@@ -49,6 +49,7 @@ export type AnalysisResponse = z.infer<typeof AnalysisResponse>;
 export const SynthesisResponse = z.object({
   finalPrompt: z.string(),
   changelog: z.array(z.string()),
+  tips: z.array(z.string()).optional(),
   metadata: z.object({
     category: PromptCategory,
     tokensUsed: z.number(),
@@ -70,6 +71,10 @@ export const SessionResponse = z.object({
   finalPrompt: z.string().nullable(),
   changelog: z.array(z.string()).nullable(),
   tokensUsed: z.number().nullable(),
+  modelUsed: z.string().nullable(),
+  versions: z.array(z.any()).nullable(),
+  steeringInputs: z.any().nullable(),
+  targetModel: z.string().nullable(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
 });
