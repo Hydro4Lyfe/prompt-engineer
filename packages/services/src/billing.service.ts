@@ -5,7 +5,7 @@ import { ServiceError } from "./errors";
 
 function getStripeClient(): Stripe {
   return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2025-04-30.basil",
+    apiVersion: "2025-08-27.basil",
   });
 }
 
@@ -122,7 +122,7 @@ export class BillingService {
       data: {
         tier,
         stripeSubscriptionId: subscription.id,
-        stripePeriodEnd: new Date(subscription.current_period_end * 1000),
+        stripePeriodEnd: new Date((subscription as any).current_period_end * 1000),
       },
     });
   }
@@ -142,7 +142,7 @@ export class BillingService {
       data: {
         tier,
         stripeSubscriptionId: subscription.id,
-        stripePeriodEnd: new Date(subscription.current_period_end * 1000),
+        stripePeriodEnd: new Date((subscription as any).current_period_end * 1000),
       },
     });
   }
