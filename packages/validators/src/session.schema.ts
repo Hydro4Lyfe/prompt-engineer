@@ -6,12 +6,15 @@ import {
   UserTier,
   ClarificationQuestion,
 } from "./common.schema";
+import { TargetModel, SteeringInputs } from "./steering.schema";
 
 // ── Request Schemas ────────────────────────────────────
 
 export const AnalyzeInput = z.object({
   rawPrompt: z.string().min(1).max(5000),
   mode: PromptMode.optional(),
+  targetModel: TargetModel.optional(),
+  steeringInputs: SteeringInputs.optional(),
 });
 export type AnalyzeInput = z.infer<typeof AnalyzeInput>;
 

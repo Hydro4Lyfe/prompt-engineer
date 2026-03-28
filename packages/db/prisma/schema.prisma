@@ -49,10 +49,13 @@ model PromptSession {
   id               String          @id @default(cuid())
   userId           String?
   user             User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  anonymousId      String?
 
   // Input
   rawPrompt        String          @default("")
   mode             PromptMode      @default(QUICK)
+  targetModel      String?
+  steeringInputs   Json?
 
   // Analysis results
   category         PromptCategory?
@@ -77,6 +80,7 @@ model PromptSession {
 
   @@index([userId, createdAt(sort: Desc)])
   @@index([status])
+  @@index([anonymousId, createdAt(sort: Desc)])
 }
 
 model Usage {
