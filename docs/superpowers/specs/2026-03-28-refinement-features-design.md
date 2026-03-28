@@ -10,7 +10,7 @@ Add post-generation refinement capabilities to the prompt engineer. After receiv
 - AI-generated tips returned alongside synthesis response
 - Static category best practices (client-side config)
 - Free-text refinement via new API endpoint
-- Steering dial re-generation (reuses existing synthesis endpoint)
+- Steering dial re-generation via dedicated `/regenerate` endpoint
 - Version history with full stack navigation
 
 ## Out of Scope
@@ -138,6 +138,8 @@ Each version entry contains:
 ### Storage
 
 The version stack is stored on the `PromptSession` in a new `versions` JSON field. This persists across page reloads and is loaded when a session is selected from the sidebar.
+
+Client-side version changes (tip applications) are persisted to the server via a lightweight `PATCH /api/sessions/[id]/versions` call that updates the `versions` JSON array. This fires after each tip application so no versions are lost if the user closes the tab.
 
 ---
 
