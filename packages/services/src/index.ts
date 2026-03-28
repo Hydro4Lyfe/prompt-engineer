@@ -1,6 +1,7 @@
 export { SessionService } from "./session.service";
 export { AnalysisService } from "./analysis.service";
 export { SynthesisService } from "./synthesis.service";
+export { RefinementService } from "./refinement.service";
 export { UsageService } from "./usage.service";
 export { BillingService } from "./billing.service";
 export { ServiceError } from "./errors";

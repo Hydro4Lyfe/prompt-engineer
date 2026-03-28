@@ -115,4 +115,16 @@ export class SessionService {
     const session = await this.getById(id, userId);
     await prisma.promptSession.delete({ where: { id: session.id } });
   }
+
+  async updateData(id: string, data: Record<string, unknown>) {
+    const session = await prisma.promptSession.findUnique({
+      where: { id },
+      select: { status: true },
+    });
+    if (!session) throw new ServiceError("SESSION_NOT_FOUND", 404);
+    return prisma.promptSession.update({
+      where: { id },
+      data,
+    });
+  }
 }
