@@ -70,6 +70,7 @@ model PromptSession {
   // Output
   finalPrompt      String?         @db.Text
   changelog        Json?
+  versions         Json?
 
   // Meta
   status           SessionStatus   @default(CREATED)
