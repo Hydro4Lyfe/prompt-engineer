@@ -99,7 +99,7 @@ The questions panel transitions into the result view.
 - When open, pushes main content to the right (not an overlay).
 - Shows a list of past sessions: truncated raw prompt text, category badge, relative timestamp.
 - Clicking a session loads its completed result into the main area.
-- Sessions are anonymous during testing — stored in database with no user association. Optionally scoped to the browser via a localStorage identifier.
+- Sessions are anonymous during testing. A client-generated anonymous ID is stored in localStorage and passed as a pseudo-userId when creating and listing sessions. This allows the sidebar to list only the current browser's sessions without real authentication.
 
 ---
 
@@ -145,6 +145,58 @@ The `PromptSession` model and API contracts need extensions:
 - Analysis prompt builder accepts steering context as parameters
 - Synthesis prompt builder accepts target model as a parameter
 
+#### Target Model Enum Values
+
+```typescript
+export const TargetModel = z.enum(["claude", "gpt-4", "gemini", "llama", "mistral", "other"]);
+```
+
+#### Steering Inputs Type
+
+```typescript
+export const SteeringInputs = z.object({
+  // Task type tag (optional — AI auto-detects if omitted)
+  taskType: PromptCategory.optional(),
+
+  // Universal dials (0-100 scale)
+  tone: z.number().min(0).max(100).default(50),         // 0 = formal, 100 = casual
+  detailLevel: z.number().min(0).max(100).default(50),  // 0 = concise, 100 = thorough
+
+  // Category-specific dials (present only when a task type is selected)
+  categoryDials: z.record(z.string(), z.union([
+    z.number(),   // sliders (0-100)
+    z.boolean(),  // toggles
+    z.string(),   // quick-selects
+  ])).optional(),
+});
+```
+
+The `categoryDials` keys are predefined per category:
+- **Coding:** `errorHandling` (boolean), `includeTests` (boolean)
+- **Writing:** `length` (number 0-100), `audience` (string: "general" | "technical" | "executive" | "casual")
+- **Research:** `depth` (number 0-100), `sourcesRequired` (boolean)
+- **Business:** `formality` (number 0-100), `includeMetrics` (boolean)
+- **Creative:** `creativity` (number 0-100), `constraints` (boolean)
+- **Educational:** `learnerLevel` (string: "beginner" | "intermediate" | "advanced"), `includeAssessment` (boolean)
+
+#### Anonymous Session Identity
+
+The existing `PromptSession.userId` has a foreign key constraint to the `User` table, so we cannot pass a random UUID as `userId`. Instead:
+
+- Add an `anonymousId` field (plain `String?`, no FK) to the `PromptSession` Prisma model. This requires a Prisma migration.
+- A client-generated UUID is stored in localStorage and sent with requests:
+
+```typescript
+// Generated once in the browser, stored in localStorage
+const anonymousId = localStorage.getItem("pe-anon-id") ?? crypto.randomUUID();
+localStorage.setItem("pe-anon-id", anonymousId);
+```
+
+- `SessionService.create()` accepts an optional `anonymousId` and stores it on the session (leave `userId` null).
+- `SessionService.list()` gains an overload/variant that queries by `anonymousId` instead of `userId`.
+- When auth is added later, sessions can be claimed by setting `userId` and clearing `anonymousId`.
+- The `anonymousId` field should be indexed for efficient listing.
+
 ---
 
 ## Visual Design
@@ -161,7 +213,7 @@ The `PromptSession` model and API contracts need extensions:
 
 ## Technical Notes
 
-- **No auth required** — Skip all user/billing checks during testing. Services support optional `userId` already.
+- **No auth required** — Skip all user/billing checks during testing. Services support optional `userId` already. For testing, bypass the tier-based feature gate on Detailed mode so both modes work without a paid account.
 - **State management** — React state machine (via `use-session-flow` hook from the implementation plan) manages the 3-step transitions.
 - **API routes** — Thin handlers calling existing service layer. Need to create the actual Next.js route files.
 - **Prompt templates** — `buildAnalysisPrompt()` and `buildSynthesisPrompt()` need to accept steering/model parameters.
