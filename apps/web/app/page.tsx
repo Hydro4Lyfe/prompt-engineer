@@ -65,6 +65,18 @@ export default function Home() {
                 result={flow.synthesisResult}
                 onBack={flow.goBack}
                 onStartOver={flow.startOver}
+                versions={flow.versions}
+                activeVersionIndex={flow.activeVersionIndex}
+                onNavigateVersion={flow.navigateToVersion}
+                currentTips={flow.currentTips}
+                appliedTips={flow.appliedTips}
+                onApplyTip={flow.applyTip}
+                steeringInputs={flow.steeringInputs}
+                onSteeringInputsChange={flow.setSteeringInputs}
+                steeringDirty={flow.steeringDirty}
+                onRegenerateWithSteering={flow.regenerateWithSteering}
+                onRefine={flow.refine}
+                isRefining={flow.isRefining}
               />
             )}
           </div>
