@@ -15,9 +15,13 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen relative">
+      {/* Aurora background layer */}
+      <div className="aurora-bg" aria-hidden="true" />
+      <div className="aurora-bg-accent" aria-hidden="true" />
+
       <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative z-10">
         <Sidebar
           isOpen={sidebarOpen}
           anonymousId={anonymousId}
@@ -25,7 +29,7 @@ export default function Home() {
           onSelectSession={flow.loadSession}
         />
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-2xl px-6 py-10">
+          <div className={`mx-auto px-6 py-12 ${flow.step === "input" ? "max-w-4xl" : "max-w-2xl"}`}>
             {flow.step === "input" && (
               <PromptInput
                 rawPrompt={flow.rawPrompt}

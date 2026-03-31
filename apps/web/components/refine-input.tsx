@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 
 interface RefineInputProps {
   onRefine: (instruction: string) => Promise<void>;
@@ -20,7 +20,7 @@ export function RefineInput({ onRefine, isRefining }: RefineInputProps) {
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2.5">
       <Textarea
         value={instruction}
         onChange={(e) => setInstruction(e.target.value)}
@@ -40,7 +40,10 @@ export function RefineInput({ onRefine, isRefining }: RefineInputProps) {
               Refining...
             </>
           ) : (
-            "Refine"
+            <>
+              <Send className="mr-1.5 h-4 w-4" />
+              Refine
+            </>
           )}
         </Button>
       </div>

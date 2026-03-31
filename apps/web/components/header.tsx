@@ -9,7 +9,7 @@ interface HeaderProps {
 
 export function Header({ onToggleSidebar }: HeaderProps) {
   return (
-    <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-3">
+    <header className="flex items-center justify-between border-b border-white/[0.06] px-6 py-3 backdrop-blur-xl bg-zinc-950/70 sticky top-0 z-30">
       <div className="flex items-center gap-3">
         <Button
           variant="ghost"
@@ -19,7 +19,9 @@ export function Header({ onToggleSidebar }: HeaderProps) {
         >
           <PanelLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-lg font-semibold tracking-tight">Prompt Engineer</h1>
+        <h1 className="text-lg font-display font-bold tracking-tight gradient-text">
+          Prompt Engineer
+        </h1>
       </div>
     </header>
   );

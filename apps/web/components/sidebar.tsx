@@ -67,17 +67,17 @@ export function Sidebar({
   return (
     <aside
       className={cn(
-        "border-r border-zinc-200 bg-zinc-50 transition-all duration-200 overflow-hidden flex-shrink-0",
+        "border-r border-white/[0.06] bg-zinc-950/80 backdrop-blur-xl transition-all duration-300 ease-out overflow-hidden flex-shrink-0",
         isOpen ? "w-72" : "w-0"
       )}
     >
       <div className="flex flex-col h-full w-72">
-        <div className="px-4 py-3 border-b border-zinc-200">
-          <h2 className="text-sm font-semibold text-zinc-700">History</h2>
+        <div className="px-4 py-3 border-b border-white/[0.06]">
+          <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">History</h2>
         </div>
         <div className="flex-1 overflow-y-auto">
           {sessions.length === 0 ? (
-            <p className="px-4 py-8 text-sm text-zinc-400 text-center">
+            <p className="px-4 py-8 text-sm text-zinc-600 text-center">
               No sessions yet
             </p>
           ) : (
@@ -87,20 +87,22 @@ export function Sidebar({
                   <button
                     onClick={() => onSelectSession(session.id)}
                     className={cn(
-                      "w-full text-left px-4 py-3 hover:bg-zinc-100 transition-colors",
-                      activeSessionId === session.id && "bg-zinc-100"
+                      "w-full text-left px-4 py-3 transition-all duration-200",
+                      activeSessionId === session.id
+                        ? "bg-violet-500/10 border-l-2 border-l-violet-500"
+                        : "hover:bg-white/[0.03] border-l-2 border-l-transparent"
                     )}
                   >
-                    <p className="text-sm text-zinc-800 truncate">
+                    <p className="text-sm text-zinc-200 truncate">
                       {session.rawPrompt || "Untitled"}
                     </p>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1.5">
                       {session.category && (
                         <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                           {session.category}
                         </Badge>
                       )}
-                      <span className="text-[10px] text-zinc-400">
+                      <span className="text-[10px] text-zinc-600">
                         {timeAgo(session.createdAt)}
                       </span>
                     </div>

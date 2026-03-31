@@ -6,7 +6,7 @@ import type {
   SteeringInputs,
 } from "@prompt-engineer/validators";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, RefreshCw, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, RefreshCw, Loader2, Sliders } from "lucide-react";
 import { ProTips } from "./pro-tips";
 import { SteeringDials } from "./steering-dials";
 import { RefineInput } from "./refine-input";
@@ -42,21 +42,24 @@ export function RefinementPanel({
   const [expanded, setExpanded] = useState(true);
 
   return (
-    <div className="rounded-lg border border-zinc-200">
+    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02]">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+        className="flex w-full items-center justify-between px-4 py-3.5 text-sm font-medium text-zinc-300 hover:text-zinc-100 transition-colors duration-200"
       >
-        <span>Refine Your Prompt</span>
+        <div className="flex items-center gap-2">
+          <Sliders className="h-4 w-4 text-violet-400" />
+          <span>Refine Your Prompt</span>
+        </div>
         {expanded ? (
-          <ChevronUp className="h-4 w-4" />
+          <ChevronUp className="h-4 w-4 text-zinc-500" />
         ) : (
-          <ChevronDown className="h-4 w-4" />
+          <ChevronDown className="h-4 w-4 text-zinc-500" />
         )}
       </button>
 
       {expanded && (
-        <div className="border-t border-zinc-100 px-4 py-4 flex flex-col gap-6">
+        <div className="border-t border-white/[0.04] px-4 py-5 flex flex-col gap-7">
           {/* Pro Tips */}
           <ProTips
             aiTips={aiTips}
@@ -67,7 +70,7 @@ export function RefinementPanel({
 
           {/* Steering Dials */}
           <div className="flex flex-col gap-3">
-            <span className="text-xs font-medium text-zinc-500">
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
               Steering Dials
             </span>
             <SteeringDials
@@ -98,8 +101,8 @@ export function RefinementPanel({
           </div>
 
           {/* Free-text Refine */}
-          <div className="flex flex-col gap-2">
-            <span className="text-xs font-medium text-zinc-500">
+          <div className="flex flex-col gap-2.5">
+            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
               Custom Refinement
             </span>
             <RefineInput onRefine={onRefine} isRefining={isRefining} />

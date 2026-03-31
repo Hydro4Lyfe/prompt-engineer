@@ -20,11 +20,11 @@ interface QuestionCardProps {
 
 export function QuestionCard({ question, answer, onChange }: QuestionCardProps) {
   return (
-    <Card className="p-5">
+    <Card className="p-5 transition-all duration-200 hover:border-white/[0.1]">
       <div className="flex flex-col gap-3">
         <div>
-          <p className="text-sm font-medium text-zinc-900">{question.question}</p>
-          <p className="text-xs text-zinc-500 mt-1">{question.why}</p>
+          <p className="text-sm font-medium text-zinc-100">{question.question}</p>
+          <p className="text-xs text-zinc-500 mt-1.5 leading-relaxed">{question.why}</p>
         </div>
 
         {question.type === "select" && question.options && (
@@ -56,7 +56,7 @@ export function QuestionCard({ question, answer, onChange }: QuestionCardProps) 
 
         {question.type === "scale" && (
           <div className="flex items-center gap-3">
-            <span className="text-xs text-zinc-400">1</span>
+            <span className="text-xs text-zinc-600 font-mono">1</span>
             <Slider
               value={[parseInt(answer ?? question.default ?? "3", 10)]}
               onValueChange={(v) => onChange(String(v[0]))}
@@ -65,7 +65,7 @@ export function QuestionCard({ question, answer, onChange }: QuestionCardProps) 
               step={1}
               className="flex-1"
             />
-            <span className="text-xs text-zinc-400">5</span>
+            <span className="text-xs text-zinc-600 font-mono">5</span>
           </div>
         )}
       </div>

@@ -1,49 +1,38 @@
 @import "tailwindcss";
 
+/* ===== LIQUID AURORA — Dark Theme ===== */
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 10% 4%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
+    --card: 240 6% 8%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
+    --popover: 240 6% 10%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --primary: 263 70% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 14%;
+    --secondary-foreground: 240 5% 80%;
+    --muted: 240 5% 14%;
+    --muted-foreground: 240 5% 55%;
+    --accent: 240 5% 16%;
+    --accent-foreground: 0 0% 95%;
+    --destructive: 350 89% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 6% 14%;
+    --input: 240 6% 14%;
+    --ring: 263 70% 58%;
+    --radius: 0.75rem;
+
+    /* Aurora accent tokens */
+    --aurora-violet: #8b5cf6;
+    --aurora-cyan: #06b6d4;
+    --aurora-rose: #f43f5e;
+    --glow-violet: rgba(139, 92, 246, 0.35);
+    --glow-cyan: rgba(6, 182, 212, 0.25);
+    --glass-bg: rgba(24, 24, 27, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.06);
   }
 }
 
@@ -71,18 +60,184 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-manrope);
+  --font-mono: var(--font-jetbrains);
+  --font-display: var(--font-bricolage);
+
+  /* Animation durations */
+  --animate-fade-up: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.4s ease-out both;
+  --animate-glow-pulse: glow-pulse 3s ease-in-out infinite;
+  --animate-aurora-drift: aurora-drift 25s ease-in-out infinite alternate;
+  --animate-shimmer: shimmer 2.5s linear infinite;
 }
+
+/* ===== Keyframes ===== */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--glow-violet), 0 0 60px rgba(139, 92, 246, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 30px var(--glow-violet), 0 0 80px rgba(139, 92, 246, 0.18);
+  }
+}
+
+@keyframes aurora-drift {
+  0% {
+    transform: translate(0%, 0%) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translate(5%, -3%) rotate(1deg) scale(1.05);
+  }
+  66% {
+    transform: translate(-3%, 5%) rotate(-1deg) scale(0.98);
+  }
+  100% {
+    transform: translate(2%, -2%) rotate(0.5deg) scale(1.02);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ===== Base Styles ===== */
 
 @layer base {
   * {
     border-color: hsl(var(--border));
   }
+}
 
-  body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    font-family: Arial, Helvetica, sans-serif;
-  }
+/* Outside @layer so it can't be overridden by Tailwind's base reset */
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(240 5% 18%);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(240 5% 26%);
+}
+
+/* ===== Aurora Background Layer ===== */
+
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.aurora-bg::before {
+  content: '';
+  position: absolute;
+  width: 900px;
+  height: 700px;
+  top: -250px;
+  right: -200px;
+  background: radial-gradient(ellipse, rgba(139, 92, 246, 0.13) 0%, rgba(139, 92, 246, 0.04) 40%, transparent 70%);
+  animation: aurora-drift 25s ease-in-out infinite alternate;
+}
+
+.aurora-bg::after {
+  content: '';
+  position: absolute;
+  width: 800px;
+  height: 600px;
+  bottom: -200px;
+  left: -150px;
+  background: radial-gradient(ellipse, rgba(6, 182, 212, 0.09) 0%, rgba(6, 182, 212, 0.03) 40%, transparent 70%);
+  animation: aurora-drift 30s ease-in-out infinite alternate-reverse;
+}
+
+/* Third aurora accent — warm violet-rose */
+.aurora-bg-accent {
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  width: 600px;
+  height: 500px;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse, rgba(139, 92, 246, 0.05) 0%, transparent 60%);
+  animation: aurora-drift 35s ease-in-out infinite alternate;
+}
+
+/* ===== Utility Classes ===== */
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: var(--glass-border);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--aurora-violet), var(--aurora-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-border-top {
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-border-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--aurora-violet), var(--aurora-cyan));
+  z-index: 1;
+}
+
+/* Stagger animation delays */
+.stagger-1 { animation-delay: 0ms; }
+.stagger-2 { animation-delay: 75ms; }
+.stagger-3 { animation-delay: 100ms; }
+.stagger-4 { animation-delay: 150ms; }
+.stagger-5 { animation-delay: 200ms; }
+.stagger-6 { animation-delay: 250ms; }
+.stagger-7 { animation-delay: 300ms; }
+
+/* Selection color */
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: #fafafa;
 }

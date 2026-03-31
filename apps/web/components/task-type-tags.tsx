@@ -3,13 +3,13 @@
 import type { PromptCategory } from "@prompt-engineer/validators";
 import { cn } from "@/lib/utils";
 
-const CATEGORIES: { value: PromptCategory; label: string }[] = [
-  { value: "WRITING", label: "Writing" },
-  { value: "CODING", label: "Coding" },
-  { value: "RESEARCH", label: "Research" },
-  { value: "BUSINESS", label: "Business" },
-  { value: "CREATIVE", label: "Creative" },
-  { value: "EDUCATIONAL", label: "Educational" },
+const CATEGORIES: { value: PromptCategory; label: string; icon: string }[] = [
+  { value: "WRITING", label: "Writing", icon: "pen" },
+  { value: "CODING", label: "Coding", icon: "code" },
+  { value: "RESEARCH", label: "Research", icon: "search" },
+  { value: "BUSINESS", label: "Business", icon: "briefcase" },
+  { value: "CREATIVE", label: "Creative", icon: "palette" },
+  { value: "EDUCATIONAL", label: "Educational", icon: "book" },
 ];
 
 interface TaskTypeTagsProps {
@@ -19,9 +19,9 @@ interface TaskTypeTagsProps {
 
 export function TaskTypeTags({ selected, onChange }: TaskTypeTagsProps) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-zinc-700">
-        Task Type <span className="font-normal text-zinc-400">(optional)</span>
+    <div className="flex flex-col gap-2">
+      <label className="text-sm font-medium text-zinc-400">
+        Task Type <span className="font-normal text-zinc-600">(optional)</span>
       </label>
       <div className="flex flex-wrap gap-2">
         {CATEGORIES.map((cat) => (
@@ -31,10 +31,10 @@ export function TaskTypeTags({ selected, onChange }: TaskTypeTagsProps) {
               onChange(selected === cat.value ? undefined : cat.value)
             }
             className={cn(
-              "rounded-full border px-3.5 py-1.5 text-sm transition-colors",
+              "rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-200",
               selected === cat.value
-                ? "border-zinc-900 bg-zinc-900 text-white"
-                : "border-zinc-200 text-zinc-600 hover:border-zinc-400 hover:bg-zinc-50"
+                ? "border-violet-500/50 bg-violet-500/15 text-violet-300 shadow-sm shadow-violet-500/10"
+                : "border-white/[0.08] text-zinc-500 hover:border-white/[0.15] hover:text-zinc-300 hover:bg-white/[0.03]"
             )}
           >
             {cat.label}

@@ -33,7 +33,7 @@ export function SteeringDials({ steeringInputs, onChange }: SteeringDialsProps) 
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       {UNIVERSAL_DIALS.map((dial) => (
         <SliderDial
           key={dial.key}
@@ -44,8 +44,8 @@ export function SteeringDials({ steeringInputs, onChange }: SteeringDialsProps) 
       ))}
 
       {categoryDials.length > 0 && (
-        <div className="border-t border-zinc-100 pt-4 flex flex-col gap-4">
-          <span className="text-xs font-medium uppercase tracking-wider text-zinc-400">
+        <div className="border-t border-white/[0.06] pt-5 flex flex-col gap-5">
+          <span className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
             {steeringInputs.taskType} options
           </span>
           {categoryDials.map((dial) => (
@@ -72,13 +72,13 @@ function SliderDial({
   onChange: (value: number[]) => void;
 }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-zinc-700">{dial.label}</label>
-        <span className="text-xs text-zinc-400">{value}</span>
+        <label className="text-sm font-medium text-zinc-300">{dial.label}</label>
+        <span className="text-xs font-mono text-violet-400/80">{value}</span>
       </div>
       <div className="flex items-center gap-3">
-        <span className="text-xs text-zinc-400 w-16 text-right">{dial.minLabel}</span>
+        <span className="text-xs text-zinc-600 w-16 text-right">{dial.minLabel}</span>
         <Slider
           value={[value]}
           onValueChange={onChange}
@@ -87,7 +87,7 @@ function SliderDial({
           step={1}
           className="flex-1"
         />
-        <span className="text-xs text-zinc-400 w-16">{dial.maxLabel}</span>
+        <span className="text-xs text-zinc-600 w-16">{dial.maxLabel}</span>
       </div>
     </div>
   );
@@ -115,18 +115,20 @@ function DialControl({
   if (dial.type === "toggle") {
     const checked = (value as boolean) ?? dial.defaultChecked ?? false;
     return (
-      <label className="flex items-center justify-between cursor-pointer">
-        <span className="text-sm font-medium text-zinc-700">{dial.label}</span>
+      <label className="flex items-center justify-between cursor-pointer group">
+        <span className="text-sm font-medium text-zinc-300">{dial.label}</span>
         <button
           role="switch"
           aria-checked={checked}
           onClick={() => onChange(!checked)}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-            checked ? "bg-zinc-900" : "bg-zinc-200"
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-200 ${
+            checked
+              ? "bg-gradient-to-r from-violet-600 to-cyan-600 shadow-sm shadow-violet-500/20"
+              : "bg-white/[0.08]"
           }`}
         >
           <span
-            className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
+            className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${
               checked ? "translate-x-6" : "translate-x-1"
             }`}
           />
@@ -137,8 +139,8 @@ function DialControl({
 
   if (dial.type === "select" && dial.options) {
     return (
-      <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-medium text-zinc-700">{dial.label}</label>
+      <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-zinc-300">{dial.label}</label>
         <Select
           value={(value as string) ?? dial.defaultOption}
           onValueChange={(v) => onChange(v)}

@@ -25,8 +25,8 @@ interface TargetModelSelectProps {
 
 export function TargetModelSelect({ value, onChange }: TargetModelSelectProps) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-zinc-700">
+    <div className="flex flex-col gap-2">
+      <label className="text-sm font-medium text-zinc-400">
         Target AI Model
       </label>
       <Select value={value} onValueChange={(v) => onChange(v as TargetModel)}>
