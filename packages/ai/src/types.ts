@@ -4,6 +4,8 @@ export interface ModelRequest {
   maxTokens?: number;
   temperature?: number;
   responseFormat?: "json" | "text";
+  signal?: AbortSignal;
+  maxRetries?: number;
 }
 
 export interface ModelResponse {
@@ -14,6 +16,7 @@ export interface ModelResponse {
     total: number;
   };
   model: string;
+  stopReason?: string;
 }
 
 export interface ModelProvider {

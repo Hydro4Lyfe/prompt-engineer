@@ -1,0 +1,55 @@
+/*
+ * DIAGNOSE TOKEN OVERRIDES
+ *
+ * Redefines the shadcn/Tailwind HSL inner vars inside `.diagnose-root` so every
+ * shadcn primitive (<Button>, <Textarea>, <Card>, etc.) picks up the dev-tool
+ * aesthetic without forking components. Scoped — does NOT leak to Screen 1/2/3.
+ */
+
+.diagnose-root {
+  /* Surfaces */
+  --background: 0 0% 4%;          /* #0a0a0a */
+  --foreground: 0 0% 93%;         /* #ededed */
+  --surface: 0 0% 4%;
+  --surface-raised: 0 0% 8%;      /* #141414 */
+  --card: 0 0% 8%;
+  --card-foreground: 0 0% 93%;
+  --popover: 0 0% 8%;
+  --popover-foreground: 0 0% 93%;
+
+  /* Accent — electric blue, used ONLY for primary CTA, New-output label,
+     active state rings. */
+  --primary: 217 91% 60%;         /* #3b82f6 */
+  --primary-foreground: 0 0% 100%;
+  --accent: 217 91% 60%;
+  --accent-foreground: 0 0% 100%;
+  --ring: 217 91% 60%;
+
+  /* Secondary / muted */
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 0 0% 93%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 55%;
+
+  /* Borders — transparent-white with alpha */
+  --border: 0 0% 100% / 0.08;
+  --input: 0 0% 100% / 0.08;
+
+  /* Error */
+  --destructive: 0 89% 71%;       /* #f87171 */
+  --destructive-foreground: 0 0% 100%;
+
+  /* Radius cap per aesthetic thesis: max 4px */
+  --radius: 0.25rem;              /* 4px */
+
+  /* Local tokens used by diagnose.css directly (not Tailwind-routed) */
+  --text-subtle: rgba(255, 255, 255, 0.35);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  min-height: 100vh;
+  font-family: "Inter", "Inter Tight", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

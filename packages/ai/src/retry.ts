@@ -29,6 +29,10 @@ export async function withRetry<T>(
     } catch (error: any) {
       lastError = error;
 
+      if (error?.name === "AbortError") {
+        throw error;
+      }
+
       const status = error?.status ?? error?.statusCode;
       const isRetryable = retryOn.includes(status);
 

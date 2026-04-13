@@ -1,0 +1,378 @@
+/*
+ * DIAGNOSE PAGE LAYOUT + RESPONSIVE + BREADCRUMB + DIFF COLUMNS
+ *
+ * All selectors scoped under `.diagnose-root`. No leakage.
+ */
+
+.diagnose-root {
+  --font-mono-stack: "JetBrains Mono", "Berkeley Mono", ui-monospace, monospace;
+}
+
+.diagnose-root .diagnose-shell {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.diagnose-root .diagnose-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+
+.diagnose-root .diagnose-columns {
+  display: grid;
+  grid-template-columns: 45% 55%;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+
+.diagnose-root .diagnose-col-left,
+.diagnose-root .diagnose-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+.diagnose-root .diagnose-col-right {
+  border-left: 1px solid hsl(var(--border));
+  padding-left: 24px;
+}
+
+.diagnose-root .field-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 500;
+}
+
+.diagnose-root .mono-textarea {
+  font-family: var(--font-mono-stack);
+  font-size: 14px;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  background: hsl(var(--surface-raised));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  resize: vertical;
+  width: 100%;
+  outline: none;
+  transition: border-color 120ms ease-out;
+}
+
+.diagnose-root .mono-textarea:focus-visible {
+  border-color: var(--border-strong);
+  outline: 2px solid hsl(var(--accent));
+  outline-offset: 2px;
+}
+
+.diagnose-root .mono-textarea.prompt {
+  min-height: 280px;
+}
+
+.diagnose-root .mono-textarea.task {
+  min-height: 120px;
+}
+
+.diagnose-root .diagnose-critique-btn {
+  align-self: flex-start;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: none;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 120ms ease-out, opacity 120ms ease-out;
+  font-family: inherit;
+}
+
+.diagnose-root .diagnose-critique-btn:hover:not(:disabled) {
+  background: hsl(217 91% 55%);
+}
+
+.diagnose-root .diagnose-critique-btn:focus-visible {
+  outline: 2px solid hsl(var(--accent));
+  outline-offset: 2px;
+}
+
+.diagnose-root .diagnose-critique-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.diagnose-root .diagnose-empty {
+  color: var(--text-subtle);
+  font-size: 13px;
+  padding: 16px;
+  align-self: flex-start;
+}
+
+.diagnose-root .diagnose-progress {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  padding: 16px;
+  font-family: var(--font-mono-stack);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.diagnose-root .suggestion-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.diagnose-root .suggestion-card {
+  background: hsl(var(--surface-raised));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 120ms ease-out, background-color 120ms ease-out;
+  text-align: left;
+  color: inherit;
+  font-family: inherit;
+  min-height: 44px;
+}
+
+.diagnose-root .suggestion-card:hover {
+  border-color: var(--border-strong);
+}
+
+.diagnose-root .suggestion-card:focus-visible {
+  outline: 2px solid hsl(var(--accent));
+  outline-offset: 2px;
+}
+
+.diagnose-root .suggestion-card.active {
+  border-left: 2px solid hsl(var(--accent));
+  background: hsl(217 91% 60% / 0.08);
+}
+
+.diagnose-root .suggestion-rank {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+
+.diagnose-root .suggestion-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+}
+
+.diagnose-root .suggestion-rationale {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.55;
+}
+
+.diagnose-root .suggestion-apply {
+  margin-top: 4px;
+  align-self: flex-start;
+  font-size: 12px;
+  color: hsl(var(--accent));
+  background: transparent;
+  border: 1px solid hsl(var(--border));
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: inherit;
+  min-height: 28px;
+}
+
+.diagnose-root .suggestion-apply:hover {
+  border-color: hsl(var(--accent));
+}
+
+.diagnose-root .suggestion-apply:focus-visible {
+  outline: 2px solid hsl(var(--accent));
+  outline-offset: 2px;
+}
+
+.diagnose-root .breadcrumb {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+  font-family: var(--font-mono-stack);
+  font-size: 12px;
+}
+
+.diagnose-root .breadcrumb-pill {
+  padding: 4px 10px;
+  background: hsl(var(--surface-raised));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  font-family: inherit;
+  min-height: 28px;
+}
+
+.diagnose-root .breadcrumb-pill.active {
+  color: hsl(var(--accent));
+  border-color: hsl(var(--accent));
+}
+
+.diagnose-root .diff-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.diagnose-root .diff-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.diagnose-root .diff-col-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 500;
+}
+
+.diagnose-root .diff-col-label.new {
+  color: hsl(var(--accent));
+}
+
+.diagnose-root .diff-output {
+  background: hsl(var(--surface-raised));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 16px;
+  font-family: var(--font-mono-stack);
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 220px;
+  color: hsl(var(--foreground));
+}
+
+.diagnose-root .diff-warning {
+  font-size: 12px;
+  color: hsl(var(--destructive));
+  padding-top: 4px;
+}
+
+.diagnose-root .diff-error {
+  font-size: 13px;
+  color: hsl(var(--destructive));
+  padding: 16px;
+}
+
+.diagnose-root .diff-copy {
+  align-self: flex-end;
+  background: transparent;
+  border: 1px solid hsl(var(--border));
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.diagnose-root .diff-copy:hover {
+  border-color: var(--border-strong);
+  color: hsl(var(--foreground));
+}
+
+.diagnose-root .error-banner {
+  color: hsl(var(--destructive));
+  font-size: 13px;
+  padding: 8px 12px;
+  border: 1px solid hsl(var(--destructive) / 0.5);
+  border-radius: var(--radius);
+  background: hsl(var(--destructive) / 0.08);
+}
+
+.diagnose-root .retry-btn {
+  background: transparent;
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: inherit;
+  margin-left: 8px;
+  min-height: 28px;
+}
+
+/* Responsive breakpoints per design doc */
+
+@media (max-width: 1279px) {
+  .diagnose-root .diagnose-columns {
+    gap: 20px;
+  }
+  .diagnose-root .diagnose-shell {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .diagnose-root .diagnose-columns {
+    grid-template-columns: 1fr;
+  }
+  .diagnose-root .diagnose-col-right {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid hsl(var(--border));
+    padding-top: 16px;
+  }
+  .diagnose-root .mono-textarea,
+  .diagnose-root .diff-output {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 767px) {
+  .diagnose-root .diagnose-shell {
+    padding: 16px;
+  }
+  .diagnose-root .diff-grid {
+    grid-template-columns: 1fr;
+  }
+  .diagnose-root .diagnose-critique-btn,
+  .diagnose-root .suggestion-card,
+  .diagnose-root .suggestion-apply,
+  .diagnose-root .breadcrumb-pill,
+  .diagnose-root .retry-btn {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diagnose-root * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
